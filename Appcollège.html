@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Outils pour le Collège</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #f0f4ff, #dff6ff);
+      margin: 0;
+      color: #333;
+    }
+
+    header {
+      background-color: #1e3a8a;
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    main {
+      max-width: 1000px;
+      margin: auto;
+      padding: 2rem;
+    }
+
+    section {
+      background: white;
+      margin-bottom: 2rem;
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      color: #1e3a8a;
+      margin-top: 0;
+    }
+
+    input, select, button, textarea {
+      font-size: 1rem;
+      padding: 8px;
+      margin: 5px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #2563eb;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #1d4ed8;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.8rem;
+      text-align: center;
+    }
+
+    th {
+      background-color: #dbeafe;
+    }
+
+    td:hover {
+      background-color: #fef08a;
+      cursor: pointer;
+    }
+
+    .downloads a {
+      display: inline-block;
+      background: #10b981;
+      color: white;
+      padding: 0.5rem 1rem;
+      margin: 5px 0;
+      border-radius: 5px;
+      text-decoration: none;
+    }
+
+    .downloads a:hover {
+      background: #059669;
+    }
+
+    .editor-toolbar button {
+      margin-right: 4px;
+    }
+
+    .editor {
+      border: 1px solid #ccc;
+      min-height: 150px;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 6px;
+      background-color: #fff;
+    }
+
+    /* To-Do List */
+    .tache {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #f0f0f0;
+      border-left: 8px solid gray;
+      padding: 10px;
+      margin-bottom: 8px;
+      border-radius: 6px;
+    }
+
+    .tache span {
+      flex: 1;
+      margin-left: 10px;
+    }
+
+    .tache input[type="checkbox"] {
+      transform: scale(1.2);
+    }
+
+    .tache.surlignee {
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
+
+    .matiere-Maths { border-color: #f87171; }
+    .matiere-Français { border-color: #60a5fa; }
+    .matiere-Histoire { border-color: #fbbf24; }
+    .matiere-SVT { border-color: #34d399; }
+    .matiere-Anglais { border-color: #a78bfa; }
+    .matiere-EPS { border-color: #f472b6; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>📚 Outils pour le Collège</h1>
+    <p>Apprends, révise, écris et interagis en un seul endroit !</p>
+  </header>
+
+  <main>
+
+    <!-- CALCULATRICE -->
+    <section>
+      <h2>🧮 Calculatrice</h2>
+      <input type="number" id="calc1"> +
+      <input type="number" id="calc2">
+      <button onclick="calculer()">Calculer</button>
+      <p>Résultat : <span id="calcResult">?</span></p>
+    </section>
+
+    <!-- CONVERTISSEUR -->
+    <section>
+      <h2>📏 Convertisseur cm ⇄ m</h2>
+      <input type="number" id="valeur">
+      <select id="unite">
+        <option value="cmToM">cm → m</option>
+        <option value="mToCm">m → cm</option>
+      </select>
+      <button onclick="convertir()">Convertir</button>
+      <p>Résultat : <span id="convResult">?</span></p>
+    </section>
+
+    <!-- TO-DO LIST -->
+    <section>
+      <h2>✅ To-do list par matière</h2>
+      <input type="text" id="todoText" placeholder="Ex: Réviser chapitre 3">
+      <select id="matiereSelect">
+        <option value="Maths">Maths</option>
+        <option value="Français">Français</option>
+        <option value="Histoire">Histoire</option>
+        <option value="SVT">SVT</option>
+        <option value="Anglais">Anglais</option>
+        <option value="EPS">EPS</option>
+      </select>
+      <button onclick="ajouterTache()">Ajouter</button>
+      <ul id="todoList" style="list-style: none; padding: 0; margin-top: 1rem;"></ul>
+    </section>
+
+    <!-- CONJUGAISON -->
+    <section>
+      <h2>📖 Conjugaison du verbe "avoir" (présent)</h2>
+      <ul>
+        <li>J’ai</li>
+        <li>Tu as</li>
+        <li>Il / Elle a</li>
+        <li>Nous avons</li>
+        <li>Vous avez</li>
+        <li>Ils / Elles ont</li>
+      </ul>
+    </section>
+
+    <!-- EDITEUR DE TEXTE -->
+    <section>
+      <h2>📝 Prise de notes (éditeur de texte)</h2>
+      <div class="editor-toolbar">
+        <button onclick="execCmd('bold')">Gras</button>
+        <button onclick="execCmd('italic')">Italique</button>
+        <button onclick="execCmd('underline')">Souligné</button>
+        <button onclick="execCmd('insertUnorderedList')">Liste</button>
+      </div>
+      <div id="editor" class="editor" contenteditable="true">Écris ici tes notes...</div>
+      <div style="margin-top: 10px;">
+        <button onclick="sauvegarderNotes()">💾 Sauvegarder</button>
+        <button onclick="rechargerNotes()">📂 Recharger</button>
+      </div>
+    </section>
+
+    <!-- QUIZ -->
+    <section>
+      <h2>🧠 Quiz interactif</h2>
+      <div>
+        <p>1. Combien font 5 × 6 ?</p>
+        <input type="number" id="q1">
+        <p>2. Sujet dans « Le chat dort » ?</p>
+        <input type="text" id="q2">
+        <p>3. En quelle année a eu lieu la Révolution française ?</p>
+        <input type="number" id="q3">
+        <p>4. Le contraire de “grand” ?</p>
+        <input type="text" id="q4">
+        <p>5. Combien font 12 ÷ 4 ?</p>
+        <input type="number" id="q5">
+        <br><br>
+        <button onclick="corrigerQuiz()">Vérifier mes réponses</button>
+        <p>Résultat : <span id="quizResult">?</span></p>
+      </div>
+    </section>
+
+    <!-- FICHES DE COURS -->
+    <section>
+      <h2>📚 Fiches de cours</h2>
+      <div class="downloads">
+        <a href="#" onclick="alert('Téléchargement de Maths.pdf')">📘 Maths</a><br>
+        <a href="#" onclick="alert('Téléchargement de Français.pdf')">📗 Français</a><br>
+        <a href="#" onclick="alert('Téléchargement de Histoire.pdf')">📙 Histoire</a>
+      </div>
+    </section>
+
+    <!-- CALCUL MENTAL -->
+<section>
+  <h2>🎯 Calcul mental</h2>
+  <p id="operation"></p>
+  <input type="number" id="reponseCalc">
+  <button onclick="verifierCalcul()">Vérifier</button>
+  <p id="resultatCalc">Clique sur "Nouvelle opération" pour commencer !</p>
+  <button onclick="nouvelleOperation()">Nouvelle opération</button>
+</section>
+
+<!-- MINUTEUR -->
+<section>
+  <h2>⏱️ Minuteur</h2>
+  <input type="number" id="minutes" placeholder="Minutes">
+  <button onclick="demarrerMinuteur()">Démarrer</button>
+  <p id="timerAffichage">00:00</p>
+</section>
+
+<!-- MOYENNE -->
+<section>
+  <h2>🧮 Moyenne par matière</h2>
+  <input type="text" id="matiereNom" placeholder="Matière">
+  <input type="number" id="note" placeholder="Note">
+  <button onclick="ajouterNote()">Ajouter</button>
+  <ul id="listeNotes"></ul>
+  <p>Moyenne : <span id="moyenneResultat">-</span></p>
+</section>
+
+<section>
+  <h2>📊 Organisateur de matières</h2>
+  <input type="text" id="matiereOrg" placeholder="Matière">
+  <input type="number" id="noteOrg" placeholder="Note">
+  <button onclick="ajouterNoteMatiere()">Ajouter</button>
+  <table id="tableMatiere">
+    <thead>
+      <tr>
+        <th onclick="trierTable()">Matière ⬍</th>
+        <th>Note</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <p>Moyenne générale : <span id="moyenneGenerale">-</span></p>
+</section>
+<section>
+  <h2>🎨 Dessin libre</h2>
+  <canvas id="zoneDessin" width="300" height="200" style="border:1px solid #ccc; background:white;"></canvas><br>
+  <button onclick="effacerDessin()">Effacer</button>
+</section>
+<!-- BLOC PENSE-BÊTE -->
+<section>
+  <h2>📝 Bloc pense-bête</h2>
+  <textarea id="stickyNote" rows="5" style="width: 100%;"></textarea><br>
+  <button onclick="sauvegarderSticky()">💾 Sauvegarder</button>
+  <button onclick="chargerSticky()">📂 Recharger</button>
+  <button onclick="effacerSticky()">🗑️ Effacer</button>
+</section>
+
+<!-- BARRE DE RECHERCHE GLOBALE -->
+<section>
+  <h2>🔎 Recherche dans le site</h2>
+  <input type="text" id="champRecherche" placeholder="Tape un mot-clé (ex: maths, avoir...)" oninput="rechercherTexte()" style="width: 100%; padding: 10px;">
+  <p id="resultatsRecherche" style="margin-top: 10px; color: #1e3a8a;"></p>
+</section>
+<section>
+  <h2>🎵 Lecteur de sons éducatifs</h2>
+  <select id="choixSon">
+    <option value="Chien qui aboie 2 (ID 2954)_LS.wav">Chien qui aboie 2</option>
+    <option value="Clavier d ordinateur (ID 0229)_LS.wav">Clavier d ordinateur</option>
+    <option value="Cloche d eglise (ID 0135)_LS.wav">Cloche d eglise</option>
+    <option value="Cri wilhelm (ID 0477)_LS.wav">Cri wilhelm</option>
+    <option value="Crissement de pneus 1 (ID 2368)_LS.wav">Crissement de pneus 1</option>
+    <option value="Discussions exterieures 2 (ID 2969)_LS.wav">Discussions exterieures 2</option>
+    <option value="Foret (ID 0100)_LS.wav">Foret</option>
+    <option value="Foret et ruisseau 1 (ID 2713)_LS.wav">Foret et ruisseau 1</option>
+    <option value="Hurlement 1 fille 1 (ID 1662)_LS.wav">Hurlement 1 fille 1</option>
+    <option value="Iphone son appareil photo (ID 0448)_LS.wav">Iphone son appareil photo</option>
+    <option value="Jingle sncf 2 (ID 0564)_LS.wav">Jingle sncf 2</option>
+    <option value="Mer vagues (ID 0266)_LS.wav">Mer vagues</option>
+    <option value="Mer vagues moyennes et mouettes (ID 0267)_LS.wav">Mer vagues moyennes et mouettes</option>
+    <option value="Message 1 (ID 1111)_LS.wav">Message 1</option>
+    <option value="Message envoye (ID 1313)_LS.wav">Message envoye</option>
+    <option value="Miaulement chat 2 (ID 1890)_LS.wav">Miaulement chat 2</option>
+    <option value="Ouverture sonnerie iphone apple (ID 1699)_LS.wav">Ouverture sonnerie iphone apple</option>
+    <option value="Pas chaussure sur parquet (ID 0376)_LS.wav">Pas chaussure sur parquet</option>
+    <option value="Pas dans les feuilles (ID 0137)_LS.wav">Pas dans les feuilles</option>
+    <option value="Pas rapides sur beton (ID 1318)_LS.wav">Pas rapides sur beton</option>
+    <option value="Pet 3 (ID 0241)_LS.wav">Pet 3</option>
+    <option value="Petit ruisseau 4 (ID 1354)_LS.wav">Petit ruisseau 4</option>
+    <option value="Pluie et orage 2 (ID 0740)_LS.wav">Pluie et orage 2</option>
+    <option value="Respiration homme essouffle (ID 1103)_LS.wav">Respiration homme essouffle</option>
+    <option value="Reveil des oiseaux 3 (ID 0999)_LS.wav">Reveil des oiseaux 3</option>
+    <option value="Rue d aubervilliers (ID 2722)_LS.wav">Rue d aubervilliers</option>
+    <option value="Tic tac mecanique 5 (ID 2816)_LS.wav">Tic tac mecanique 5</option>
+    <option value="Tonnerre 4 (ID 3115)_LS.wav">Tonnerre 4</option>
+    <option value="Une minute de silence (ID 0917)_LS.wav">Une minute de silence</option>
+    <option value="Vent (ID 0595)_LS.wav">Vent</option>
+    <option value="Vent dans les herbes hautes (ID 0908)_LS.wav">Vent dans les herbes hautes</option>
+    <option value="Whoosh 4 (ID 1796)_LS.wav">Whoosh 4</option>
+    <option value="Bebe qui pleure (ID 0233)_LS.wav">Bebe qui pleure</option>
+    <option value="Bip de caisse (ID 1417)_LS.wav">Bip de caisse</option>
+    <option value="Bruit blanc (ID 1037)_LS.wav">Bruit blanc</option>
+    <option value="Bulles eclatent (ID 1074)_LS.wav">Bulles eclatent</option>
+    <option value="Campagne la nuit 4 (ID 1880)_LS.wav">Campagne la nuit 4</option>
+    <option value="Carillon d entree 6 (ID 2365)_LS.wav">Carillon d entree 6</option>
+    <option value="Cassette audio retour musique 8 (ID 2174)_LS.wav">Cassette audio retour musique 8</option>
+    <option value="Cris et applaudissements d ados 2 (ID 0237)_LS.wav">Cris et applaudissements d ados 2</option>
+    <option value="Explosion au loin (ID 1023)_LS.wav">Explosion au loin</option>
+    <option value="Foret vent a la cime des arbres (ID 0904)_LS.wav">Foret vent a la cime des arbres</option>
+    <option value="Grand feu de branches 1 (ID 0987)_LS.wav">Grand feu de branches 1</option>
+    <option value="Grincement de porte 8 (ID 3211)_LS.wav">Grincement de porte 8</option>
+    <option value="Hennissement de cheval 3 (ID 0863)_LS.wav">Hennissement de cheval 3</option>
+    <option value="Horloge (ID 0007)_LS.wav">Horloge</option>
+    <option value="Iphone sonnerie marimba (ID 0452)_LS.wav">Iphone sonnerie marimba</option>
+    <option value="Machine a ecrire 8 (ID 2841)_LS.wav">Machine a ecrire 8</option>
+    <option value="Oiseaux du soir (ID 1859)_LS.wav">Oiseaux du soir</option>
+    <option value="Petites vagues face ocean (ID 1046)_LS.wav">Petites vagues face ocean</option>
+    <option value="Plouf gros 3 (ID 1521)_LS.wav">Plouf gros 3</option>
+    <option value="Pluie d ete sur terrasse (ID 1019)_LS.wav">Pluie d ete sur terrasse</option>
+    <option value="Porte d appartement ouverture 2 (ID 1703)_LS.wav">Porte d appartement ouverture 2</option>
+    <option value="Portiere de voiture 4 (ID 1526)_LS.wav">Portiere de voiture 4</option>
+    <option value="Recreation maternelle 7 (ID 2746)_LS.wav">Recreation maternelle 7</option>
+    <option value="Soiree discussions moyennes (ID 0684)_LS.wav">Soiree discussions moyennes</option>
+    <option value="Telephone a cadran (ID 0001)_LS.wav">Telephone a cadran</option>
+    <option value="Verre qui eclate (ID 0148)_LS.wav">Verre qui eclate</option>
+  </select>
+  <button onclick="jouerSon()">▶️ Écouter</button>
+  <audio id="lecteurAudio" controls style="display:none; margin-top: 10px;"></audio>
+</section>
+
+  </main>
+
+  <script>
+    function calculer() {
+      const a = parseFloat(document.getElementById("calc1").value);
+      const b = parseFloat(document.getElementById("calc2").value);
+      const res = a + b;
+      document.getElementById("calcResult").textContent = isNaN(res) ? "Erreur" : res;
+    }
+
+    function convertir() {
+      const val = parseFloat(document.getElementById("valeur").value);
+      const unite = document.getElementById("unite").value;
+      let res;
+      if (unite === "cmToM") res = val / 100 + " m";
+      else res = val * 100 + " cm";
+      document.getElementById("convResult").textContent = isNaN(val) ? "Erreur" : res;
+    }
+
+    function showSubject(matiere) {
+      alert("Tu as cours de : " + matiere);
+    }
+
+    function execCmd(cmd) {
+      document.execCommand(cmd, false, null);
+    }
+
+    function sauvegarderNotes() {
+      localStorage.setItem("mesNotes", document.getElementById("editor").innerHTML);
+      alert("Notes sauvegardées !");
+    }
+
+    function rechargerNotes() {
+      const contenu = localStorage.getItem("mesNotes");
+      if (contenu) {
+        document.getElementById("editor").innerHTML = contenu;
+        alert("Notes rechargées !");
+      } else {
+        alert("Aucune note trouvée.");
+      }
+    }
+
+    function corrigerQuiz() {
+      let score = 0;
+      if (parseInt(document.getElementById("q1").value) === 30) score++;
+      if (document.getElementById("q2").value.trim().toLowerCase() === "le chat") score++;
+      if (parseInt(document.getElementById("q3").value) === 1789) score++;
+      if (document.getElementById("q4").value.trim().toLowerCase() === "petit") score++;
+      if (parseInt(document.getElementById("q5").value) === 3) score++;
+      document.getElementById("quizResult").textContent = `${score}/5 bonnes réponses`;
+    }
+
+    function ajouterTache() {
+      const texte = document.getElementById("todoText").value.trim();
+      const matiere = document.getElementById("matiereSelect").value;
+      if (texte === "") {
+        alert("Écris une tâche !");
+        return;
+      }
+
+      const liste = document.getElementById("todoList");
+      const li = document.createElement("li");
+      li.className = `tache matiere-${matiere}`;
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.onchange = function () {
+        li.classList.toggle("surlignee");
+      };
+
+      const span = document.createElement("span");
+      span.textContent = `[${matiere}] ${texte}`;
+
+      const boutonSuppr = document.createElement("button");
+      boutonSuppr.textContent = "❌";
+      boutonSuppr.style.marginLeft = "10px";
+      boutonSuppr.onclick = () => li.remove();
+
+      li.appendChild(checkbox);
+      li.appendChild(span);
+      li.appendChild(boutonSuppr);
+      liste.appendChild(li);
+
+      document.getElementById("todoText").value = "";
+    }
+
+    // CALCUL MENTAL
+let resultatAttendu = 0;
+
+function nouvelleOperation() {
+  const a = Math.floor(Math.random() * 10) + 1;
+  const b = Math.floor(Math.random() * 10) + 1;
+  const operateurs = ['+', '-', '×'];
+  const op = operateurs[Math.floor(Math.random() * operateurs.length)];
+  let operationTexte = `${a} ${op} ${b}`;
+  switch(op) {
+    case '+': resultatAttendu = a + b; break;
+    case '-': resultatAttendu = a - b; break;
+    case '×': resultatAttendu = a * b; break;
+  }
+  document.getElementById("operation").textContent = operationTexte;
+  document.getElementById("resultatCalc").textContent = "";
+  document.getElementById("reponseCalc").value = "";
+}
+
+function verifierCalcul() {
+  const val = parseInt(document.getElementById("reponseCalc").value);
+  const res = (val === resultatAttendu) ? "✅ Bravo !" : `❌ Mauvaise réponse (c'était ${resultatAttendu})`;
+  document.getElementById("resultatCalc").textContent = res;
+}
+
+// MINUTEUR
+let intervalle;
+
+function demarrerMinuteur() {
+  clearInterval(intervalle);
+  const minutes = parseInt(document.getElementById("minutes").value);
+  if (isNaN(minutes) || minutes <= 0) {
+    alert("Entre une durée en minutes !");
+    return;
+  }
+  let tempsRestant = minutes * 60;
+  const affichage = document.getElementById("timerAffichage");
+
+  intervalle = setInterval(() => {
+    const m = Math.floor(tempsRestant / 60);
+    const s = tempsRestant % 60;
+    affichage.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    tempsRestant--;
+
+    if (tempsRestant < 0) {
+      clearInterval(intervalle);
+      alert("⏰ Temps écoulé !");
+      affichage.textContent = "00:00";
+    }
+  }, 1000);
+}
+
+// MOYENNE
+let notesParMatiere = [];
+
+function ajouterNote() {
+  const matiere = document.getElementById("matiereNom").value.trim();
+  const note = parseFloat(document.getElementById("note").value);
+  if (!matiere || isNaN(note)) {
+    alert("Remplis la matière et une note valide !");
+    return;
+  }
+
+  notesParMatiere.push(note);
+  const ul = document.getElementById("listeNotes");
+  const li = document.createElement("li");
+  li.textContent = `${matiere} : ${note}`;
+  ul.appendChild(li);
+
+  const somme = notesParMatiere.reduce((a, b) => a + b, 0);
+  const moyenne = somme / notesParMatiere.length;
+  document.getElementById("moyenneResultat").textContent = moyenne.toFixed(2);
+
+  document.getElementById("note").value = "";
+  document.getElementById("matiereNom").value = "";
+}
+let listeNotes = [];
+
+function ajouterNoteMatiere() {
+  const matiere = document.getElementById("matiereOrg").value.trim();
+  const note = parseFloat(document.getElementById("noteOrg").value);
+  if (!matiere || isNaN(note)) {
+    alert("Remplis une matière et une note !");
+    return;
+  }
+
+  listeNotes.push({ matiere, note });
+  afficherTableau();
+  calculerMoyenne();
+  document.getElementById("matiereOrg").value = "";
+  document.getElementById("noteOrg").value = "";
+}
+
+function afficherTableau() {
+  const tbody = document.querySelector("#tableMatiere tbody");
+  tbody.innerHTML = "";
+  listeNotes.forEach((item, index) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${item.matiere}</td>
+      <td>${item.note}</td>
+      <td><button onclick="supprimerNote(${index})">🗑️</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function calculerMoyenne() {
+  if (listeNotes.length === 0) {
+    document.getElementById("moyenneGenerale").textContent = "-";
+    return;
+  }
+  const somme = listeNotes.reduce((total, item) => total + item.note, 0);
+  const moyenne = somme / listeNotes.length;
+  document.getElementById("moyenneGenerale").textContent = moyenne.toFixed(2);
+}
+
+function supprimerNote(index) {
+  listeNotes.splice(index, 1);
+  afficherTableau();
+  calculerMoyenne();
+}
+
+function trierTable() {
+  listeNotes.sort((a, b) => a.matiere.localeCompare(b.matiere));
+  afficherTableau();
+}
+const canvas = document.getElementById('zoneDessin');
+const ctx = canvas.getContext('2d');
+let dessin = false;
+
+canvas.addEventListener('mousedown', () => dessin = true);
+canvas.addEventListener('mouseup', () => dessin = false);
+canvas.addEventListener('mouseleave', () => dessin = false);
+canvas.addEventListener('mousemove', e => {
+  if (!dessin) return;
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  ctx.fillStyle = "#000000";
+  ctx.fillRect(x, y, 2, 2);
+});
+
+function effacerDessin() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+// 📝 PENSE-BÊTE
+function sauvegarderSticky() {
+  const note = document.getElementById("stickyNote").value;
+  localStorage.setItem("stickyNote", note);
+  alert("Note sauvegardée !");
+}
+
+function chargerSticky() {
+  const note = localStorage.getItem("stickyNote");
+  document.getElementById("stickyNote").value = note || "";
+  alert(note ? "Note rechargée !" : "Aucune note trouvée.");
+}
+
+function effacerSticky() {
+  localStorage.removeItem("stickyNote");
+  document.getElementById("stickyNote").value = "";
+  alert("Note effacée !");
+}
+
+// 🔎 RECHERCHE GLOBALE
+function rechercherTexte() {
+  const mot = document.getElementById("champRecherche").value.toLowerCase().trim();
+  const zones = document.querySelectorAll("main section");
+  let total = 0;
+
+  zones.forEach(sec => {
+    const texte = sec.textContent.toLowerCase();
+    if (mot && texte.includes(mot)) {
+      sec.style.border = "2px solid #10b981";
+      total++;
+    } else {
+      sec.style.border = "none";
+    }
+  });
+
+  document.getElementById("resultatsRecherche").textContent = mot ?
+    `${total} section(s) contiennent « ${mot} »` : "";
+}
+function jouerSon() {
+  const audio = document.getElementById("lecteurAudio");
+  const fichier = document.getElementById("choixSon").value;
+  audio.src = fichier;
+  audio.style.display = "block";
+  audio.play();
+}
+
+  </script>
+
+</body>
+</html>
