@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Assistant IA - TechnoGost</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+
+#loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: white;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2rem;
+  color: #007bff;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.spinner {
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #007bff;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+#loader.fade-out {
+  opacity: 0;
+  transform: scale(1.2);
+}
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .chat-container {
+      background: white;
+      width: 95%;
+      max-width: 500px;
+      height: 600px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .top-bar {
+  background: #007bff;
+  color: white;
+  text-align: center;
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.top-bar-title {
+  flex: 1;
+  text-align: center;
+}
+
+.top-bar-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.top-bar button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+#soundBtn {
+  background: white;
+  color: #007bff;
+}
+
+#resetBtn {
+  background: #ffdddd;
+  color: #c00;
+}
+
+#soundBtn:hover {
+  background: #e0e0e0;
+}
+
+#resetBtn:hover {
+  background: #ffcccc;
+}
+
+
+    .messages {
+      flex: 1;
+      padding: 1rem;
+      overflow-y: auto;
+    }
+
+    .message {
+      margin-bottom: 1rem;
+    }
+
+    .user {
+      text-align: right;
+      color: #007bff;
+    }
+
+    .bot {
+      text-align: left;
+      color: #333;
+    }
+
+    .loading {
+      font-style: italic;
+      color: #888;
+    }
+
+    .input-area {
+      display: flex;
+      border-top: 1px solid #ddd;
+    }
+
+    input {
+      flex: 1;
+      padding: 1rem;
+      border: none;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    button.send {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 1rem 1.2rem;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    button.send:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="loader">
+  <div class="spinner"></div>
+  <p>Chargement de votre assistant IA...</p>
+</div>
+
+<audio id="welcomeSound" src="for-future-bass-159125.mp3"></audio>
+
+  <div class="chat-container">
+<div class="top-bar">
+  <div class="top-bar-title">Assistant IA - TechnoGost</div>
+  <div class="top-bar-buttons">
+    <button id="soundBtn" onclick="toggleSound()">🔊 Son</button>
+    <button id="resetBtn" onclick="resetChat()">🔄 Réinitialiser</button>
+  </div>
+</div>
+
+    <div class="messages" id="chat"></div>
+    <div class="input-area">
+      <input type="text" id="userInput" placeholder="Pose ta question..." />
+      <button class="send" onclick="sendMessage()">Envoyer</button>
+    </div>
+  </div>
+
+  <script>
+    let soundEnabled = true;
+
+const responses = {
+  "bonjour": "Bonjour ! Je suis l'assistant IA de TechnoGost 🤖",
+  "salut": "Salut ! Comment puis-je t'aider aujourd’hui ?",
+  "hello": "Hello 👋 Tu veux parler d'IA, de tech ou autre chose ?",
+  "c'est quoi claude ai": "Claude AI est une intelligence artificielle développée par la société Anthropic.",
+  "claude ai": "Claude AI est un assistant IA avancé créé par Anthropic, concurrent de ChatGPT.",
+  "anthropic": "Anthropic est une entreprise spécialisée en intelligence artificielle, créatrice de Claude AI.",
+  "c'est quoi chatgpt": "ChatGPT est un modèle d’IA développé par OpenAI, conçu pour converser naturellement avec les humains.",
+  "chatgpt": "ChatGPT est un chatbot intelligent basé sur le modèle GPT d’OpenAI.",
+  "openai": "OpenAI est une entreprise spécialisée dans l'IA, à l'origine de ChatGPT et DALL·E.",
+  "qui t'a créé": "Je suis une création du site TechnoGost 😉",
+  "tu es qui": "Je suis l’assistant IA du site TechnoGost, ici pour t’aider !",
+  "que fais-tu": "Je réponds à tes questions sur l’IA, la technologie, et plus encore.",
+  "merci": "Avec plaisir ! Tu veux savoir autre chose ?",
+  "merci beaucoup": "Pas de souci 😄. Tu as une autre question ?",
+  "aide": "Tu peux me poser une question sur Claude AI, ChatGPT, l’intelligence artificielle ou la tech.",
+  "aide moi": "Tu peux me poser une question sur Claude AI, ChatGPT, l’intelligence artificielle, la tech...",
+  "tu fais quoi": "J’aide les visiteurs de TechnoGost à mieux comprendre l’intelligence artificielle et les outils tech.",
+  "site technogost": "TechnoGost est un site dédié à la tech, à l’IA, aux outils utiles et aux découvertes numériques.",
+  "comment gagner de l'argent avec l'ia": "Tu peux créer une chaîne YouTube, vendre des eBooks, faire de l’affiliation ou lancer des outils IA.",
+  "tu peux m'aider": "Bien sûr ! Pose-moi ta question 😊",
+  "au revoir": "À bientôt 👋 N’hésite pas à revenir me parler.",
+  "bye": "Bye bye ! Prends soin de toi 👋",
+  "qu'est-ce qu'une api": "C'est une interface qui permet à deux logiciels de communiquer entre eux.",
+  "quelle est la capitale de la france": "La capitale de la France est Paris.",
+  "qui a écrit les misérables": "Victor Hugo a écrit *Les Misérables*.",
+  "quelle est la formule de l'eau": "La formule chimique de l'eau est H₂O.",
+  "qu'est-ce qu'un verbe": "Un verbe est un mot qui exprime une action ou un état.",
+  "comment dit-on bonjour en anglais": "On dit 'hello' en anglais.",
+  "quel est le plus grand océan du monde": "C'est l'océan Pacifique.",
+  "qui a découvert l'amérique": "Christophe Colomb a découvert l'Amérique en 1492.",
+  "quelle est la racine carrée de 49": "C'est 7.",
+  "comment calcule-t-on l'aire d'un rectangle": "En multipliant la longueur par la largeur.",
+  "qu'est-ce qu'une fraction": "C'est une manière d'exprimer une division entre deux nombres.",
+  "c'est quoi une planète": "Une planète est un corps céleste qui tourne autour d'une étoile.",
+  "quels sont les cinq sens": "La vue, l'ouïe, l'odorat, le goût et le toucher.",
+  "qu'est-ce qu'une démocratie": "C'est un système politique où le peuple élit ses représentants.",
+  "qui est marie curie": "Une scientifique connue pour ses travaux sur la radioactivité.",
+  "qu'est-ce qu'un adjectif": "Un mot qui décrit un nom.",
+  "qu'est-ce que la gravité": "C'est une force qui attire les objets les uns vers les autres.",
+  "comment dit-on merci en espagnol": "On dit 'gracias'.",
+  "quelle est la langue la plus parlée au monde": "C’est le mandarin chinois.",
+  "comment écrit-on 1000 en chiffres romains": "On écrit M.",
+  "quels sont les continents": "Afrique, Amérique, Asie, Europe, Océanie, Antarctique.",
+  "qu'est-ce qu'une métaphore": "C'est une comparaison sans outil de comparaison.",
+  "qu'est-ce que la biodiversité": "La diversité des espèces vivantes sur Terre.",
+  "qu'est-ce que l'adn": "L'ADN est le support de l'information génétique.",
+  "combien de dents a un adulte": "Un adulte a 32 dents.",
+  "qu'est-ce qu'un volcan": "C’est une montagne qui peut expulser de la lave.",
+  "que veut dire égalité": "Cela signifie que tous ont les mêmes droits.",
+  "quand a eu lieu la révolution française": "En 1789.",
+  "quelle est la vitesse de la lumière": "Environ 300 000 km/s.",
+  "qu'est-ce que le développement durable": "Un développement qui respecte les besoins des générations futures.",
+  "qui est le président de la république française": "C’est Emmanuel Macron (en 2025).",
+};
+
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      document.getElementById("soundBtn").textContent = soundEnabled ? "🔊 Son" : "🔇 Muet";
+    }
+
+    function speak(text) {
+      if (!soundEnabled) return;
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "fr-FR";
+      speechSynthesis.speak(utterance);
+    }
+
+    function sendMessage() {
+      const input = document.getElementById("userInput");
+      const message = input.value.trim().toLowerCase();
+      if (message === "") return;
+
+      const chat = document.getElementById("chat");
+      const userMsg = `<div class="message user"><strong>Toi:</strong> ${message}</div>`;
+      chat.innerHTML += userMsg;
+
+      const loadingId = `loading-${Date.now()}`;
+      chat.innerHTML += `<div class="message bot loading" id="${loadingId}"><strong>IA:</strong> TechnoGost réfléchit...</div>`;
+      chat.scrollTop = chat.scrollHeight;
+
+      saveToHistory(userMsg);
+
+      setTimeout(() => {
+        const reply = responses[message] || "Je ne sais pas encore répondre à ça 😅. Essaie une autre question.";
+        const replyMsg = `<div class="message bot"><strong>IA:</strong> ${reply}</div>`;
+
+        const loadingElement = document.getElementById(loadingId);
+        if (loadingElement) {
+          loadingElement.classList.remove("loading");
+          loadingElement.innerHTML = `<strong>IA:</strong> ${reply}`;
+        }
+
+        speak(reply);
+        saveToHistory(replyMsg);
+        chat.scrollTop = chat.scrollHeight;
+      }, 1000);
+
+      input.value = "";
+    }
+
+    function saveToHistory(msgHTML) {
+      let history = localStorage.getItem("chatHistory");
+      history = history ? history + msgHTML : msgHTML;
+      localStorage.setItem("chatHistory", history);
+    }
+
+    function loadHistory() {
+      const chat = document.getElementById("chat");
+      const history = localStorage.getItem("chatHistory");
+      if (history) chat.innerHTML = history;
+    }
+
+    function resetChat() {
+      localStorage.removeItem("chatHistory");
+      document.getElementById("chat").innerHTML = "";
+      const welcome = "Bonjour 👋 Je suis l’assistant IA de TechnoGost. Pose-moi une question sur l’intelligence artificielle, Claude AI, ChatGPT, la tech...";
+      const welcomeHTML = `<div class="message bot"><strong>IA:</strong> ${welcome}</div>`;
+      document.getElementById("chat").innerHTML += welcomeHTML;
+      speak(welcome);
+      saveToHistory(welcomeHTML);
+    }
+
+    window.onload = function () {
+      loadHistory();
+      if (!localStorage.getItem("chatHistory")) {
+        resetChat();
+      }
+    };
+
+window.addEventListener("load", function () {
+  setTimeout(() => {
+    const loader = document.getElementById("loader");
+    const welcomeSound = document.getElementById("welcomeSound");
+
+    // Lancer l'animation de disparition
+    loader.classList.add("fade-out");
+
+    // Jouer le son de bienvenue
+    welcomeSound.play();
+
+    // Supprimer le loader après l'animation (600ms)
+    setTimeout(() => {
+      loader.style.display = "none";
+    }, 600);
+  }, 2000); // Attente de 2 secondes avant de cacher le loader
+});
+
+
+
+  </script>
+</body>
+</html>

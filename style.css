@@ -1,0 +1,96 @@
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: white;
+  color: #222;
+  transition: background 0.3s, color 0.3s;
+}
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #111;
+  color: white;
+  padding: 1rem 2rem;
+}
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+}
+nav a {
+  color: white;
+  text-decoration: none;
+}
+#modeToggle {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: white;
+}
+section {
+  padding: 3rem 2rem;
+  max-width: 900px;
+  margin: auto;
+}
+.btn {
+  display: inline-block;
+  background-color: #007bff;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  text-decoration: none;
+  border-radius: 10px;
+  margin-top: 1rem;
+}
+.video-container {
+  text-align: center;
+  margin-top: 2rem;
+}
+.socials {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+  padding: 0;
+}
+.socials a {
+  text-decoration: none;
+  color: #007bff;
+}
+footer {
+  background: #111;
+  color: white;
+  text-align: center;
+  padding: 1rem;
+}
+.product-card {
+  background: #f0f0f0;
+  padding: 2rem;
+  border-radius: 10px;
+  margin: 2rem 0;
+}
+form input, form button {
+  padding: 0.75rem;
+  margin: 0.5rem 0;
+}
+form input {
+  width: 70%;
+}
+form button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+}
+.dark-mode {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+.dark-mode header {
+  background-color: #000;
+}
